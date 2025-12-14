@@ -1,5 +1,21 @@
-import { Employee, LeaveRequest, PerformanceReview, Document, HistoryEvent, RolePermission, AuditLog, Activity } from '@/types';
+// ============================================
+// Mock Data for Development
+// ============================================
 
+import {
+  Employee,
+  LeaveRequest,
+  PerformanceReview,
+  Document,
+  EmploymentHistoryEntry,
+  RolePermission,
+  AuditEntry,
+  Activity,
+  User,
+  LeaveBalance,
+} from '@/types';
+
+// === Employees ===
 export const mockEmployees: Employee[] = [
   {
     id: 'EMP001',
@@ -15,7 +31,7 @@ export const mockEmployees: Employee[] = [
     status: 'Active',
     manager: 'Michael Chen',
     employmentType: 'Full-time',
-    address: '123 Tech Lane, San Francisco, CA 94102'
+    address: '123 Tech Lane, San Francisco, CA 94102',
   },
   {
     id: 'EMP002',
@@ -30,7 +46,7 @@ export const mockEmployees: Employee[] = [
     joiningDate: '2019-07-22',
     status: 'Active',
     employmentType: 'Full-time',
-    address: '456 Innovation Blvd, San Francisco, CA 94103'
+    address: '456 Innovation Blvd, San Francisco, CA 94103',
   },
   {
     id: 'EMP003',
@@ -46,7 +62,7 @@ export const mockEmployees: Employee[] = [
     status: 'Active',
     manager: 'Lisa Park',
     employmentType: 'Full-time',
-    address: '789 Design Ave, New York, NY 10001'
+    address: '789 Design Ave, New York, NY 10001',
   },
   {
     id: 'EMP004',
@@ -62,7 +78,7 @@ export const mockEmployees: Employee[] = [
     status: 'Active',
     manager: 'Sarah Johnson',
     employmentType: 'Full-time',
-    address: '321 Data Dr, Austin, TX 78701'
+    address: '321 Data Dr, Austin, TX 78701',
   },
   {
     id: 'EMP005',
@@ -77,7 +93,7 @@ export const mockEmployees: Employee[] = [
     joiningDate: '2018-11-05',
     status: 'On Leave',
     employmentType: 'Full-time',
-    address: '654 Creative St, New York, NY 10002'
+    address: '654 Creative St, New York, NY 10002',
   },
   {
     id: 'EMP006',
@@ -93,7 +109,7 @@ export const mockEmployees: Employee[] = [
     status: 'Active',
     manager: 'Amanda Foster',
     employmentType: 'Full-time',
-    address: '987 People Ave, Chicago, IL 60601'
+    address: '987 People Ave, Chicago, IL 60601',
   },
   {
     id: 'EMP007',
@@ -108,7 +124,7 @@ export const mockEmployees: Employee[] = [
     joiningDate: '2017-09-12',
     status: 'Active',
     employmentType: 'Full-time',
-    address: '159 HR Lane, Chicago, IL 60602'
+    address: '159 HR Lane, Chicago, IL 60602',
   },
   {
     id: 'EMP008',
@@ -124,10 +140,11 @@ export const mockEmployees: Employee[] = [
     status: 'Active',
     manager: 'Michael Chen',
     employmentType: 'Full-time',
-    address: '753 Code Way, Seattle, WA 98101'
-  }
+    address: '753 Code Way, Seattle, WA 98101',
+  },
 ];
 
+// === Leave Requests ===
 export const mockLeaveRequests: LeaveRequest[] = [
   {
     id: 'LV001',
@@ -140,7 +157,9 @@ export const mockLeaveRequests: LeaveRequest[] = [
     days: 4,
     status: 'Approved',
     reason: 'Family vacation',
-    createdAt: '2024-02-01'
+    createdAt: '2024-02-01',
+    reviewedBy: 'Amanda Foster',
+    reviewedAt: '2024-02-02',
   },
   {
     id: 'LV002',
@@ -153,7 +172,7 @@ export const mockLeaveRequests: LeaveRequest[] = [
     days: 2,
     status: 'Pending',
     reason: 'Medical appointment',
-    createdAt: '2024-02-10'
+    createdAt: '2024-02-10',
   },
   {
     id: 'LV003',
@@ -166,7 +185,7 @@ export const mockLeaveRequests: LeaveRequest[] = [
     days: 2,
     status: 'Pending',
     reason: 'Personal matters',
-    createdAt: '2024-02-08'
+    createdAt: '2024-02-08',
   },
   {
     id: 'LV004',
@@ -179,7 +198,9 @@ export const mockLeaveRequests: LeaveRequest[] = [
     days: 60,
     status: 'Approved',
     reason: 'Maternity leave',
-    createdAt: '2024-01-10'
+    createdAt: '2024-01-10',
+    reviewedBy: 'Amanda Foster',
+    reviewedAt: '2024-01-11',
   },
   {
     id: 'LV005',
@@ -192,10 +213,22 @@ export const mockLeaveRequests: LeaveRequest[] = [
     days: 3,
     status: 'Rejected',
     reason: 'Conference attendance',
-    createdAt: '2024-02-05'
-  }
+    createdAt: '2024-02-05',
+    reviewedBy: 'Amanda Foster',
+    reviewedAt: '2024-02-06',
+  },
 ];
 
+// === Leave Balances ===
+export const mockLeaveBalances: LeaveBalance[] = [
+  { employeeId: 'EMP001', annual: 20, sick: 10, personal: 5, used: 8 },
+  { employeeId: 'EMP002', annual: 25, sick: 10, personal: 5, used: 5 },
+  { employeeId: 'EMP003', annual: 15, sick: 10, personal: 5, used: 3 },
+  { employeeId: 'EMP004', annual: 15, sick: 10, personal: 5, used: 2 },
+  { employeeId: 'EMP005', annual: 25, sick: 10, personal: 5, used: 60 },
+];
+
+// === Performance Reviews ===
 export const mockPerformanceReviews: PerformanceReview[] = [
   {
     id: 'PR001',
@@ -208,16 +241,17 @@ export const mockPerformanceReviews: PerformanceReview[] = [
     overallRating: 4.5,
     status: 'Completed',
     lastUpdated: '2024-01-15',
+    reviewerId: 'EMP002',
     goals: [
       { id: 'G1', title: 'Complete API migration', description: 'Migrate legacy API to new architecture', progress: 100, rating: 5 },
-      { id: 'G2', title: 'Mentor junior developers', description: 'Provide guidance to 2 junior developers', progress: 80, rating: 4 }
+      { id: 'G2', title: 'Mentor junior developers', description: 'Provide guidance to 2 junior developers', progress: 80, rating: 4 },
     ],
     competencies: [
       { id: 'C1', name: 'Technical Skills', rating: 5, comments: 'Excellent technical proficiency' },
       { id: 'C2', name: 'Communication', rating: 4, comments: 'Clear and effective communicator' },
-      { id: 'C3', name: 'Leadership', rating: 4, comments: 'Shows strong leadership potential' }
+      { id: 'C3', name: 'Leadership', rating: 4, comments: 'Shows strong leadership potential' },
     ],
-    comments: 'Sarah has exceeded expectations this quarter. Her technical leadership on the API migration was instrumental to the project success.'
+    comments: 'Sarah has exceeded expectations this quarter. Her technical leadership on the API migration was instrumental to the project success.',
   },
   {
     id: 'PR002',
@@ -232,12 +266,12 @@ export const mockPerformanceReviews: PerformanceReview[] = [
     lastUpdated: '2024-01-20',
     goals: [
       { id: 'G1', title: 'Redesign dashboard', description: 'Complete new dashboard design system', progress: 90, rating: 4 },
-      { id: 'G2', title: 'User research', description: 'Conduct 10 user interviews', progress: 100, rating: 5 }
+      { id: 'G2', title: 'User research', description: 'Conduct 10 user interviews', progress: 100, rating: 5 },
     ],
     competencies: [
       { id: 'C1', name: 'Design Skills', rating: 5 },
-      { id: 'C2', name: 'Collaboration', rating: 4 }
-    ]
+      { id: 'C2', name: 'Collaboration', rating: 4 },
+    ],
   },
   {
     id: 'PR003',
@@ -249,7 +283,7 @@ export const mockPerformanceReviews: PerformanceReview[] = [
     period: 'Oct - Dec 2023',
     overallRating: 0,
     status: 'Not Started',
-    lastUpdated: '2024-01-05'
+    lastUpdated: '2024-01-05',
   },
   {
     id: 'PR004',
@@ -261,57 +295,64 @@ export const mockPerformanceReviews: PerformanceReview[] = [
     period: 'Oct - Dec 2023',
     overallRating: 3.8,
     status: 'Completed',
-    lastUpdated: '2024-01-18'
-  }
+    lastUpdated: '2024-01-18',
+  },
 ];
 
+// === Documents ===
 export const mockDocuments: Document[] = [
-  { id: 'DOC001', name: 'Employment Contract.pdf', type: 'Contract', uploadDate: '2021-03-15', size: '245 KB' },
-  { id: 'DOC002', name: 'ID Verification.pdf', type: 'ID', uploadDate: '2021-03-15', size: '1.2 MB' },
-  { id: 'DOC003', name: 'AWS Certification.pdf', type: 'Certificate', uploadDate: '2023-06-20', size: '890 KB' },
-  { id: 'DOC004', name: 'NDA Agreement.pdf', type: 'Policy', uploadDate: '2021-03-15', size: '156 KB' }
+  { id: 'DOC001', employeeId: 'EMP001', name: 'Employment Contract.pdf', type: 'Contract', uploadDate: '2021-03-15', size: '245 KB' },
+  { id: 'DOC002', employeeId: 'EMP001', name: 'ID Verification.pdf', type: 'ID', uploadDate: '2021-03-15', size: '1.2 MB' },
+  { id: 'DOC003', employeeId: 'EMP001', name: 'AWS Certification.pdf', type: 'Certificate', uploadDate: '2023-06-20', size: '890 KB' },
+  { id: 'DOC004', employeeId: 'EMP001', name: 'NDA Agreement.pdf', type: 'Policy', uploadDate: '2021-03-15', size: '156 KB' },
 ];
 
-export const mockHistory: HistoryEvent[] = [
-  { id: 'H001', date: '2024-01-15', type: 'Promoted', description: 'Promoted to Senior Software Engineer' },
-  { id: 'H002', date: '2023-06-01', type: 'Award', description: 'Employee of the Quarter - Q2 2023' },
-  { id: 'H003', date: '2022-03-15', type: 'Role Change', description: 'Transitioned to Tech Lead role' },
-  { id: 'H004', date: '2021-03-15', type: 'Hired', description: 'Joined as Software Engineer' }
+// === Employment History ===
+export const mockHistory: EmploymentHistoryEntry[] = [
+  { id: 'H001', employeeId: 'EMP001', date: '2024-01-15', type: 'Promoted', description: 'Promoted to Senior Software Engineer' },
+  { id: 'H002', employeeId: 'EMP001', date: '2023-06-01', type: 'Award', description: 'Employee of the Quarter - Q2 2023' },
+  { id: 'H003', employeeId: 'EMP001', date: '2022-03-15', type: 'Role Change', description: 'Transitioned to Tech Lead role' },
+  { id: 'H004', employeeId: 'EMP001', date: '2021-03-15', type: 'Hired', description: 'Joined as Software Engineer' },
 ];
 
+// === Role Permissions ===
 export const mockRolePermissions: RolePermission[] = [
   { role: 'System Admin', permissions: { 'Core HR': true, 'Leave': true, 'Performance': true, 'Dashboard': true, 'Audit': true } },
   { role: 'HR Admin', permissions: { 'Core HR': true, 'Leave': true, 'Performance': true, 'Dashboard': true, 'Audit': false } },
   { role: 'Manager', permissions: { 'Core HR': false, 'Leave': true, 'Performance': true, 'Dashboard': true, 'Audit': false } },
-  { role: 'Employee', permissions: { 'Core HR': false, 'Leave': true, 'Performance': false, 'Dashboard': true, 'Audit': false } }
+  { role: 'Employee', permissions: { 'Core HR': false, 'Leave': true, 'Performance': false, 'Dashboard': true, 'Audit': false } },
 ];
 
-export const mockAuditLogs: AuditLog[] = [
-  { id: 'AL001', timestamp: '2024-02-10 14:32:15', actor: 'Amanda Foster', action: 'Leave Approved', entity: 'Leave', entityId: 'LV001', status: 'Success', verified: true, blockchainTxId: '0x1a2b3c...' },
-  { id: 'AL002', timestamp: '2024-02-10 11:20:45', actor: 'Michael Chen', action: 'Performance Review Completed', entity: 'Review', entityId: 'PR001', status: 'Success', verified: true, blockchainTxId: '0x4d5e6f...' },
-  { id: 'AL003', timestamp: '2024-02-09 16:45:30', actor: 'James Wilson', action: 'Employee Record Updated', entity: 'Employee', entityId: 'EMP003', status: 'Success', verified: true, blockchainTxId: '0x7g8h9i...' },
-  { id: 'AL004', timestamp: '2024-02-09 09:15:22', actor: 'System', action: 'Document Uploaded', entity: 'Document', entityId: 'DOC003', status: 'Success', verified: true, blockchainTxId: '0xj0k1l2...' },
-  { id: 'AL005', timestamp: '2024-02-08 13:50:18', actor: 'Amanda Foster', action: 'Role Permission Changed', entity: 'System', status: 'Success', verified: false },
-  { id: 'AL006', timestamp: '2024-02-08 10:30:05', actor: 'Sarah Johnson', action: 'Leave Request Submitted', entity: 'Leave', entityId: 'LV002', status: 'Success', verified: true, blockchainTxId: '0xm3n4o5...' }
+// === Audit Logs ===
+export const mockAuditLogs: AuditEntry[] = [
+  { id: 'AL001', timestamp: '2024-02-10 14:32:15', actor: 'Amanda Foster', actorId: 'EMP007', action: 'Leave Approved', entityType: 'Leave', entityId: 'LV001', status: 'Success', verified: true, blockchainTxId: '0x1a2b3c...' },
+  { id: 'AL002', timestamp: '2024-02-10 11:20:45', actor: 'Michael Chen', actorId: 'EMP002', action: 'Performance Review Completed', entityType: 'Review', entityId: 'PR001', status: 'Success', verified: true, blockchainTxId: '0x4d5e6f...' },
+  { id: 'AL003', timestamp: '2024-02-09 16:45:30', actor: 'James Wilson', actorId: 'EMP006', action: 'Employee Record Updated', entityType: 'Employee', entityId: 'EMP003', status: 'Success', verified: true, blockchainTxId: '0x7g8h9i...' },
+  { id: 'AL004', timestamp: '2024-02-09 09:15:22', actor: 'System', action: 'Document Uploaded', entityType: 'Document', entityId: 'DOC003', status: 'Success', verified: true, blockchainTxId: '0xj0k1l2...' },
+  { id: 'AL005', timestamp: '2024-02-08 13:50:18', actor: 'Amanda Foster', actorId: 'EMP007', action: 'Role Permission Changed', entityType: 'System', status: 'Success', verified: false },
+  { id: 'AL006', timestamp: '2024-02-08 10:30:05', actor: 'Sarah Johnson', actorId: 'EMP001', action: 'Leave Request Submitted', entityType: 'Leave', entityId: 'LV002', status: 'Success', verified: true, blockchainTxId: '0xm3n4o5...' },
 ];
 
+// === Activities ===
 export const mockActivities: Activity[] = [
-  { id: 'A001', type: 'leave', message: 'Leave request approved for Sarah Johnson', timestamp: '2 hours ago' },
-  { id: 'A002', type: 'employee', message: 'New employee Robert Taylor joined Engineering', timestamp: '5 hours ago' },
-  { id: 'A003', type: 'review', message: 'Performance review completed for Emily Rodriguez', timestamp: '1 day ago' },
-  { id: 'A004', type: 'document', message: 'Contract document verified for David Kim', timestamp: '2 days ago' },
-  { id: 'A005', type: 'leave', message: 'Leave request submitted by James Wilson', timestamp: '3 days ago' }
+  { id: 'A001', type: 'leave', message: 'Leave request approved for Sarah Johnson', timestamp: '2 hours ago', actorName: 'Amanda Foster' },
+  { id: 'A002', type: 'employee', message: 'New employee Robert Taylor joined Engineering', timestamp: '5 hours ago', actorName: 'HR System' },
+  { id: 'A003', type: 'review', message: 'Performance review completed for Emily Rodriguez', timestamp: '1 day ago', actorName: 'Michael Chen' },
+  { id: 'A004', type: 'document', message: 'Contract document verified for David Kim', timestamp: '2 days ago', actorName: 'James Wilson' },
+  { id: 'A005', type: 'leave', message: 'Leave request submitted by James Wilson', timestamp: '3 days ago', actorName: 'James Wilson' },
 ];
 
-export const mockCurrentUser = {
+// === Current User (default) ===
+export const mockCurrentUser: User = {
   id: 'USR001',
   firstName: 'Amanda',
   lastName: 'Foster',
   email: 'amanda.foster@company.com',
   avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150',
-  role: 'HR Admin' as const
+  role: 'HR Admin',
 };
 
+// === Chart Data ===
 export const performanceChartData = [
   { week: 'Week 1', score: 75 },
   { week: 'Week 2', score: 78 },
@@ -320,7 +361,7 @@ export const performanceChartData = [
   { week: 'Week 5', score: 85 },
   { week: 'Week 6', score: 88 },
   { week: 'Week 7', score: 87 },
-  { week: 'Week 8', score: 92 }
+  { week: 'Week 8', score: 92 },
 ];
 
 export const employeeStatsData = [
@@ -328,5 +369,5 @@ export const employeeStatsData = [
   { department: 'Design', count: 18 },
   { department: 'HR', count: 12 },
   { department: 'Analytics', count: 15 },
-  { department: 'Marketing', count: 22 }
+  { department: 'Marketing', count: 22 },
 ];

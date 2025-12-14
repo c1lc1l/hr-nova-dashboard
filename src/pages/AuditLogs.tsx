@@ -25,7 +25,7 @@ export default function AuditLogs() {
 
   const filteredLogs = useMemo(() => {
     return mockAuditLogs.filter(log => {
-      const matchesEntity = entityFilter === 'all' || log.entity === entityFilter;
+      const matchesEntity = entityFilter === 'all' || log.entityType === entityFilter;
       const matchesSearch = 
         log.actor.toLowerCase().includes(searchQuery.toLowerCase()) ||
         log.action.toLowerCase().includes(searchQuery.toLowerCase());
@@ -45,11 +45,11 @@ export default function AuditLogs() {
     { key: 'actor', header: 'Actor' },
     { key: 'action', header: 'Action' },
     {
-      key: 'entity',
+      key: 'entityType',
       header: 'Entity',
       render: (log: AuditLog) => (
         <div className="flex items-center gap-2">
-          <span>{log.entity}</span>
+          <span>{log.entityType}</span>
           {log.entityId && (
             <span className="text-xs text-muted-foreground">({log.entityId})</span>
           )}
