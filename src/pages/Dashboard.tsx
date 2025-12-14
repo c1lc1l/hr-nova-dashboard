@@ -4,6 +4,7 @@ import { KpiCard } from '@/components/charts/KpiCard';
 import { LineChartCard } from '@/components/charts/LineChartCard';
 import { BarChartCard } from '@/components/charts/BarChartCard';
 import { StatusChip } from '@/components/ui/status-chip';
+import { PageHeader } from '@/components/PageHeader';
 import { Users, Calendar, Clock, Brain, FileText, UserCheck, Star, CheckCircle } from 'lucide-react';
 import { mockActivities, performanceChartData, employeeStatsData } from '@/services/mockData';
 import { User } from '@/types';
@@ -26,16 +27,11 @@ export default function Dashboard({ user }: DashboardProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Welcome Back, {user?.firstName || 'Admin'}! 👋
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Here's what's happening in your organization today.
-        </p>
-      </div>
+    <main className="space-y-6">
+      <PageHeader
+        title={`Welcome Back, ${user?.firstName || 'Admin'}!`}
+        description="Here's what's happening in your organization today."
+      />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -161,6 +157,6 @@ export default function Dashboard({ user }: DashboardProps) {
           </Card>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
