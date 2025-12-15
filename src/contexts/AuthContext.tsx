@@ -1,10 +1,19 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { User, AppRole } from '@/types';
-import { config } from '@/config';
-
-// ============================================
-// Auth Context Types
-// ============================================
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
+import {
+  getCurrentUser,
+  fetchAuthSession,
+  signIn,
+  signOut,
+} from "aws-amplify/auth";
+import { config } from "@/config";
+import { User, AppRole } from "@/types";
 
 interface AuthState {
   user: User | null;
@@ -19,59 +28,45 @@ interface AuthContextValue extends AuthState {
   canAccessModule: (module: string) => boolean;
 }
 
-// Module access by role
 const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
-  'System Admin': ['Dashboard', 'Core HR', 'Leave', 'Performance', 'Admin', 'Audit', 'Analytics'],
-  'HR Admin': ['Dashboard', 'Core HR', 'Leave', 'Performance', 'Admin', 'Analytics'],
-  'Manager': ['Dashboard', 'Leave', 'Performance', 'Analytics'],
-  'Employee': ['Dashboard', 'Leave'],
+  "System Admin": [
+    "Dashboard",
+    "Core HR",
+    "Leave",
+    "Performance",
+    "Admin",
+    "Audit",
+    "Analytics",
+  ],
+  "HR Admin": ["Dashboard", "Core HR", "Leave", "Performance", "Admin", "Analytics"],
+  Manager: ["Dashboard", "Leave", "Performance", "Analytics"],
+  Employee: ["Dashboard", "Leave"],
 };
-
-// ============================================
-// Auth Context
-// ============================================
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// Mock user data - TODO: Replace with Cognito authentication
-const mockUsers: Record<string, User> = {
-  'admin@company.com': {
-    id: 'USR001',
-    firstName: 'Amanda',
-    lastName: 'Foster',
-    email: 'admin@company.com',
-    avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150',
-    role: 'System Admin',
-  },
-  'hr@company.com': {
-    id: 'USR002',
-    firstName: 'James',
-    lastName: 'Wilson',
-    email: 'hr@company.com',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-    role: 'HR Admin',
-  },
-  'manager@company.com': {
-    id: 'USR003',
-    firstName: 'Michael',
-    lastName: 'Chen',
-    email: 'manager@company.com',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    role: 'Manager',
-  },
-  'employee@company.com': {
-    id: 'USR004',
-    firstName: 'Sarah',
-    lastName: 'Johnson',
-    email: 'employee@company.com',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-    role: 'Employee',
-  },
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapCognitoToUser(cognitoUser: any | undefined): User | null {
+  if (!cognitoUser) return null;
 
-// ============================================
-// Auth Provider
-// ============================================
+  const attrs = cognitoUser.attributes || {};
+  const groups: string[] =
+    cognitoUser?.signInUserSession?.idToken?.payload?.["cognito:groups"] || [];
+
+  let role: AppRole = "Employee";
+  if (groups.includes("SystemAdmin")) role = "System Admin";
+  else if (groups.includes("HRAdmin")) role = "HR Admin";
+  else if (groups.includes("Manager")) role = "Manager";
+
+  return {
+    id: attrs.sub || cognitoUser.username || "",
+    firstName: attrs.given_name || "",
+    lastName: attrs.family_name || "",
+    email: attrs.email || "",
+    avatar: "",
+    role,
+  };
+}
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -84,112 +79,109 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading: true,
   });
 
-  // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem(config.auth.userStorageKey);
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser) as User;
-        setState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } catch {
-        localStorage.removeItem(config.auth.userStorageKey);
-        setState(prev => ({ ...prev, isLoading: false }));
-      }
-    } else {
-      setState(prev => ({ ...prev, isLoading: false }));
-    }
-  }, []);
+  (async () => {
+    try {
+      const cognitoUser = await getCurrentUser();      // instead of Auth.currentAuthenticatedUser()
+      const user = mapCognitoToUser(cognitoUser);
+      if (user) {
+        const session = await fetchAuthSession();      // instead of Auth.currentSession()
+        const idToken = session.tokens?.idToken?.toString() ?? "";
 
-  // Login handler
-  // TODO: Integrate with AWS Cognito
-  const login = useCallback(async (email: string, password: string): Promise<User> => {
+        localStorage.setItem(config.auth.tokenStorageKey, idToken);
+        localStorage.setItem(config.auth.userStorageKey, JSON.stringify(user));
+        setState({ user, isAuthenticated: true, isLoading: false });
+      } else {
+        setState({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    } catch {
+      setState({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  })();
+}, []);
+
+const login = useCallback(
+  async (email: string, password: string): Promise<User> => {
     setState(prev => ({ ...prev, isLoading: true }));
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const { isSignedIn, nextStep } = await signIn({
+        username: email,
+        password,
+      });
 
-    // Mock authentication - accepts any password for demo
-    // In production, this would call Cognito
-    const user = mockUsers[email.toLowerCase()] || mockUsers['hr@company.com'];
+      if (!isSignedIn) {
+        // handle nextStep (e.g. MFA) if you need it
+      }
 
-    // TODO: Replace with actual Cognito authentication
-    // const cognitoUser = await Auth.signIn(email, password);
-    // const session = await Auth.currentSession();
-    // const idToken = session.getIdToken().getJwtToken();
-    // Store token: localStorage.setItem(config.auth.tokenStorageKey, idToken);
+      const session = await fetchAuthSession();
+      const idToken = session.tokens?.idToken?.toString() ?? "";
+      const cognitoUser = await getCurrentUser();
+      const user = mapCognitoToUser(cognitoUser);
 
-    localStorage.setItem(config.auth.userStorageKey, JSON.stringify(user));
-    setState({
-      user,
-      isAuthenticated: true,
-      isLoading: false,
-    });
+      if (!user) {
+        throw new Error("Unable to map Cognito user");
+      }
 
-    return user;
-  }, []);
+      localStorage.setItem(config.auth.tokenStorageKey, idToken);
+      localStorage.setItem(config.auth.userStorageKey, JSON.stringify(user));
 
-  // Logout handler
+      setState({ user, isAuthenticated: true, isLoading: false });
+      return user;
+    } catch (error) {
+      setState(prev => ({ ...prev, isAuthenticated: false, isLoading: false }));
+      throw error;
+    }
+  },
+  []
+);
+
   const logout = useCallback(async () => {
-    // TODO: Call Cognito signOut
-    // await Auth.signOut();
-
+    await signOut();
     localStorage.removeItem(config.auth.userStorageKey);
     localStorage.removeItem(config.auth.tokenStorageKey);
-    setState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-    });
+    setState({ user: null, isAuthenticated: false, isLoading: false });
   }, []);
 
-  // Check if user has one of the specified roles
-  const hasRole = useCallback((roles: AppRole | AppRole[]): boolean => {
-    if (!state.user) return false;
-    const roleArray = Array.isArray(roles) ? roles : [roles];
-    return roleArray.includes(state.user.role);
-  }, [state.user]);
-
-  // Check if user can access a specific module
-  const canAccessModule = useCallback((module: string): boolean => {
-    if (!state.user) return false;
-    const allowedModules = ROLE_PERMISSIONS[state.user.role] || [];
-    return allowedModules.includes(module);
-  }, [state.user]);
-
-  const value = useMemo<AuthContextValue>(() => ({
-    ...state,
-    login,
-    logout,
-    hasRole,
-    canAccessModule,
-  }), [state, login, logout, hasRole, canAccessModule]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const hasRole = useCallback(
+    (roles: AppRole | AppRole[]): boolean => {
+      if (!state.user) return false;
+      const roleArray = Array.isArray(roles) ? roles : [roles];
+      return roleArray.includes(state.user.role);
+    },
+    [state.user]
   );
-}
 
-// ============================================
-// Custom Hook
-// ============================================
+  const canAccessModule = useCallback(
+    (module: string): boolean => {
+      if (!state.user) return false;
+      const allowedModules = ROLE_PERMISSIONS[state.user.role] || [];
+      return allowedModules.includes(module);
+    },
+    [state.user]
+  );
+
+  const value: AuthContextValue = useMemo(
+    () => ({
+      ...state,
+      login,
+      logout,
+      hasRole,
+      canAccessModule,
+    }),
+    [state, login, logout, hasRole, canAccessModule]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
-
-// ============================================
-// Route Guard Component
-// ============================================
 
 interface RequireAuthProps {
   children: React.ReactNode;
