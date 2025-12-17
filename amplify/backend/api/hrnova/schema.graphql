@@ -1,22 +1,3 @@
-type Employee
-  @model
-  @auth(rules: [
-    { allow: groups, groups: ["SysAdmin", "HRAdmin"], operations: [create, read, update, delete] }
-    { allow: groups, groups: ["Manager"], operations: [read] }
-    { allow: owner, ownerField: "id", operations: [read] }
-  ]) {
-  id: ID!
-  firstName: String!
-  lastName: String!
-  email: AWSEmail!
-  role: String!
-  city: String
-  joiningDate: AWSDate
-  phone: String
-  status: String!
-  avatar: AWSURL
-}
-
 type LeaveRequest
   @model
   @auth(
@@ -58,4 +39,28 @@ type LeaveBalance
   sick: Int!
   personal: Int!
   used: Int!
+}
+
+type Employee
+  @model
+  @auth(
+    rules: [
+      { allow: groups, groups: ["SysAdmin", "HRAdmin"], operations: [create, read, update, delete] }
+      { allow: groups, groups: ["Manager"], operations: [read] }
+      # Optional: employees can read their own record if id == sub
+      { allow: owner, ownerField: "id", operations: [read] }
+    ]
+  ) {
+  id: ID!                # will be like "0001-PCU-IT"
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  role: String!
+  city: String
+  joiningDate: AWSDate
+  phone: String
+  status: String!
+  avatar: AWSURL
+  department: String!    # "IT" | "Education" | "HR"
+  idNumber: String!      # raw numeric/short part if you want to store it
 }

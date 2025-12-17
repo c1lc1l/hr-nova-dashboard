@@ -190,6 +190,78 @@ export type DeleteLeaveBalanceInput = {
   id: string,
 };
 
+export type CreateEmployeeInput = {
+  id?: string | null,
+  firstName: string,
+  lastName: string,
+  email: string,
+  role: string,
+  city?: string | null,
+  joiningDate?: string | null,
+  phone?: string | null,
+  status: string,
+  avatar?: string | null,
+  department: string,
+  idNumber: string,
+};
+
+export type ModelEmployeeConditionInput = {
+  firstName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  email?: ModelStringInput | null,
+  role?: ModelStringInput | null,
+  city?: ModelStringInput | null,
+  joiningDate?: ModelStringInput | null,
+  phone?: ModelStringInput | null,
+  status?: ModelStringInput | null,
+  avatar?: ModelStringInput | null,
+  department?: ModelStringInput | null,
+  idNumber?: ModelStringInput | null,
+  and?: Array< ModelEmployeeConditionInput | null > | null,
+  or?: Array< ModelEmployeeConditionInput | null > | null,
+  not?: ModelEmployeeConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  id?: ModelStringInput | null,
+};
+
+export type Employee = {
+  __typename: "Employee",
+  id: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  role: string,
+  city?: string | null,
+  joiningDate?: string | null,
+  phone?: string | null,
+  status: string,
+  avatar?: string | null,
+  department: string,
+  idNumber: string,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type UpdateEmployeeInput = {
+  id: string,
+  firstName?: string | null,
+  lastName?: string | null,
+  email?: string | null,
+  role?: string | null,
+  city?: string | null,
+  joiningDate?: string | null,
+  phone?: string | null,
+  status?: string | null,
+  avatar?: string | null,
+  department?: string | null,
+  idNumber?: string | null,
+};
+
+export type DeleteEmployeeInput = {
+  id: string,
+};
+
 export type ModelLeaveRequestFilterInput = {
   id?: ModelIDInput | null,
   employeeId?: ModelIDInput | null,
@@ -233,6 +305,32 @@ export type ModelLeaveBalanceFilterInput = {
 export type ModelLeaveBalanceConnection = {
   __typename: "ModelLeaveBalanceConnection",
   items:  Array<LeaveBalance | null >,
+  nextToken?: string | null,
+};
+
+export type ModelEmployeeFilterInput = {
+  id?: ModelIDInput | null,
+  firstName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  email?: ModelStringInput | null,
+  role?: ModelStringInput | null,
+  city?: ModelStringInput | null,
+  joiningDate?: ModelStringInput | null,
+  phone?: ModelStringInput | null,
+  status?: ModelStringInput | null,
+  avatar?: ModelStringInput | null,
+  department?: ModelStringInput | null,
+  idNumber?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelEmployeeFilterInput | null > | null,
+  or?: Array< ModelEmployeeFilterInput | null > | null,
+  not?: ModelEmployeeFilterInput | null,
+};
+
+export type ModelEmployeeConnection = {
+  __typename: "ModelEmployeeConnection",
+  items:  Array<Employee | null >,
   nextToken?: string | null,
 };
 
@@ -308,6 +406,25 @@ export type ModelSubscriptionLeaveBalanceFilterInput = {
   and?: Array< ModelSubscriptionLeaveBalanceFilterInput | null > | null,
   or?: Array< ModelSubscriptionLeaveBalanceFilterInput | null > | null,
   employeeId?: ModelStringInput | null,
+};
+
+export type ModelSubscriptionEmployeeFilterInput = {
+  firstName?: ModelSubscriptionStringInput | null,
+  lastName?: ModelSubscriptionStringInput | null,
+  email?: ModelSubscriptionStringInput | null,
+  role?: ModelSubscriptionStringInput | null,
+  city?: ModelSubscriptionStringInput | null,
+  joiningDate?: ModelSubscriptionStringInput | null,
+  phone?: ModelSubscriptionStringInput | null,
+  status?: ModelSubscriptionStringInput | null,
+  avatar?: ModelSubscriptionStringInput | null,
+  department?: ModelSubscriptionStringInput | null,
+  idNumber?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionEmployeeFilterInput | null > | null,
+  or?: Array< ModelSubscriptionEmployeeFilterInput | null > | null,
+  id?: ModelStringInput | null,
 };
 
 export type CreateLeaveRequestMutationVariables = {
@@ -442,6 +559,81 @@ export type DeleteLeaveBalanceMutation = {
   } | null,
 };
 
+export type CreateEmployeeMutationVariables = {
+  input: CreateEmployeeInput,
+  condition?: ModelEmployeeConditionInput | null,
+};
+
+export type CreateEmployeeMutation = {
+  createEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateEmployeeMutationVariables = {
+  input: UpdateEmployeeInput,
+  condition?: ModelEmployeeConditionInput | null,
+};
+
+export type UpdateEmployeeMutation = {
+  updateEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteEmployeeMutationVariables = {
+  input: DeleteEmployeeInput,
+  condition?: ModelEmployeeConditionInput | null,
+};
+
+export type DeleteEmployeeMutation = {
+  deleteEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type GetLeaveRequestQueryVariables = {
   id: string,
 };
@@ -531,6 +723,60 @@ export type ListLeaveBalancesQuery = {
       sick: number,
       personal: number,
       used: number,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetEmployeeQueryVariables = {
+  id: string,
+};
+
+export type GetEmployeeQuery = {
+  getEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListEmployeesQueryVariables = {
+  filter?: ModelEmployeeFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListEmployeesQuery = {
+  listEmployees?:  {
+    __typename: "ModelEmployeeConnection",
+    items:  Array< {
+      __typename: "Employee",
+      id: string,
+      firstName: string,
+      lastName: string,
+      email: string,
+      role: string,
+      city?: string | null,
+      joiningDate?: string | null,
+      phone?: string | null,
+      status: string,
+      avatar?: string | null,
+      department: string,
+      idNumber: string,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -665,6 +911,81 @@ export type OnDeleteLeaveBalanceSubscription = {
     sick: number,
     personal: number,
     used: number,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnCreateEmployeeSubscriptionVariables = {
+  filter?: ModelSubscriptionEmployeeFilterInput | null,
+  id?: string | null,
+};
+
+export type OnCreateEmployeeSubscription = {
+  onCreateEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateEmployeeSubscriptionVariables = {
+  filter?: ModelSubscriptionEmployeeFilterInput | null,
+  id?: string | null,
+};
+
+export type OnUpdateEmployeeSubscription = {
+  onUpdateEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteEmployeeSubscriptionVariables = {
+  filter?: ModelSubscriptionEmployeeFilterInput | null,
+  id?: string | null,
+};
+
+export type OnDeleteEmployeeSubscription = {
+  onDeleteEmployee?:  {
+    __typename: "Employee",
+    id: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    city?: string | null,
+    joiningDate?: string | null,
+    phone?: string | null,
+    status: string,
+    avatar?: string | null,
+    department: string,
+    idNumber: string,
     createdAt: string,
     updatedAt: string,
   } | null,

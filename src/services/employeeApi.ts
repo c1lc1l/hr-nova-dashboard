@@ -1,4 +1,3 @@
-// src/services/employeeApi.ts
 import { generateClient } from "aws-amplify/api";
 import type { GraphQLResult } from "@aws-amplify/api";
 import type { Employee } from "@/types";
@@ -6,19 +5,24 @@ import type { Employee } from "@/types";
 const client = generateClient();
 
 type ListEmployeesResult = {
-  listEmployees: { items: Employee[] };
+  listEmployees: {
+    items: Employee[];
+  };
 };
 
 type CreateEmployeeInput = {
+  id: string;           // "idNumber-PCU-Department"
   firstName: string;
   lastName: string;
   email: string;
   role: string;
   city?: string;
-  joiningDate?: string;
+  joiningDate?: string; // AWSDate: "YYYY-MM-DD"
   phone?: string;
   status: string;
   avatar?: string;
+  department: string;
+  idNumber: string;
 };
 
 type CreateEmployeeResult = {
@@ -41,6 +45,8 @@ export async function fetchEmployees(): Promise<Employee[]> {
             phone
             status
             avatar
+            department
+            idNumber
           }
         }
       }
@@ -67,6 +73,8 @@ export async function createEmployee(
           phone
           status
           avatar
+          department
+          idNumber
         }
       }
     `,

@@ -20,7 +20,7 @@ export default function EmployeeDetail() {
   if (!employee) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
-        <p className="text-muted-foreground">Employee not found</p>
+        <p className="text-muted-foreground">This feature is coming soon. You will be able to edit profile details here.</p>
         <Button variant="link" onClick={() => navigate('/employees')}>
           Back to Directory
         </Button>

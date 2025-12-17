@@ -104,3 +104,57 @@ export const listLeaveBalances = /* GraphQL */ `query ListLeaveBalances(
   APITypes.ListLeaveBalancesQueryVariables,
   APITypes.ListLeaveBalancesQuery
 >;
+export const getEmployee = /* GraphQL */ `query GetEmployee($id: ID!) {
+  getEmployee(id: $id) {
+    id
+    firstName
+    lastName
+    email
+    role
+    city
+    joiningDate
+    phone
+    status
+    avatar
+    department
+    idNumber
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetEmployeeQueryVariables,
+  APITypes.GetEmployeeQuery
+>;
+export const listEmployees = /* GraphQL */ `query ListEmployees(
+  $filter: ModelEmployeeFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listEmployees(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      firstName
+      lastName
+      email
+      role
+      city
+      joiningDate
+      phone
+      status
+      avatar
+      department
+      idNumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListEmployeesQueryVariables,
+  APITypes.ListEmployeesQuery
+>;

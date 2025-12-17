@@ -146,3 +146,81 @@ export const onDeleteLeaveBalance = /* GraphQL */ `subscription OnDeleteLeaveBal
   APITypes.OnDeleteLeaveBalanceSubscriptionVariables,
   APITypes.OnDeleteLeaveBalanceSubscription
 >;
+export const onCreateEmployee = /* GraphQL */ `subscription OnCreateEmployee(
+  $filter: ModelSubscriptionEmployeeFilterInput
+  $id: String
+) {
+  onCreateEmployee(filter: $filter, id: $id) {
+    id
+    firstName
+    lastName
+    email
+    role
+    city
+    joiningDate
+    phone
+    status
+    avatar
+    department
+    idNumber
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateEmployeeSubscriptionVariables,
+  APITypes.OnCreateEmployeeSubscription
+>;
+export const onUpdateEmployee = /* GraphQL */ `subscription OnUpdateEmployee(
+  $filter: ModelSubscriptionEmployeeFilterInput
+  $id: String
+) {
+  onUpdateEmployee(filter: $filter, id: $id) {
+    id
+    firstName
+    lastName
+    email
+    role
+    city
+    joiningDate
+    phone
+    status
+    avatar
+    department
+    idNumber
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateEmployeeSubscriptionVariables,
+  APITypes.OnUpdateEmployeeSubscription
+>;
+export const onDeleteEmployee = /* GraphQL */ `subscription OnDeleteEmployee(
+  $filter: ModelSubscriptionEmployeeFilterInput
+  $id: String
+) {
+  onDeleteEmployee(filter: $filter, id: $id) {
+    id
+    firstName
+    lastName
+    email
+    role
+    city
+    joiningDate
+    phone
+    status
+    avatar
+    department
+    idNumber
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteEmployeeSubscriptionVariables,
+  APITypes.OnDeleteEmployeeSubscription
+>;

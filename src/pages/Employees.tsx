@@ -33,7 +33,11 @@ import type { Employee } from "@/types";
 import { fetchEmployees, createEmployee } from "@/services/employeeApi";
 import { useToast } from "@/hooks/use-toast";
 
+type Department = "IT" | "Education" | "HR";
+
 type NewEmployeeForm = {
+  idNumber: string;
+  department: Department;
   firstName: string;
   lastName: string;
   email: string;
@@ -58,6 +62,8 @@ export default function EmployeesPage() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newEmployee, setNewEmployee] = useState<NewEmployeeForm>({
+    idNumber: "",
+    department: "IT",
     firstName: "",
     lastName: "",
     email: "",
@@ -145,7 +151,27 @@ export default function EmployeesPage() {
   ];
 
   const createEmployeeMutation = useMutation({
-    mutationFn: (values: NewEmployeeForm) => createEmployee(values),
+    mutationFn: (values: NewEmployeeForm) => {
+      const formattedId = `${values.idNumber}-PCU-${values.department}`;
+      const fullName = `${values.firstName.trim()} ${values.lastName.trim()}`;
+      const encodedName = encodeURIComponent(fullName); // handles spaces, ñ, etc.
+      const defaultAvatar = `https://avatar.iran.liara.run/username?username=${encodedName}`;
+
+      return createEmployee({
+        id: formattedId,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        role: values.role,
+        city: values.city || undefined,
+        joiningDate: values.joiningDate || undefined,
+        phone: values.phone || undefined,
+        status: values.status,
+        avatar: values.avatar?.trim() ? values.avatar.trim() : defaultAvatar,
+        department: values.department,
+        idNumber: values.idNumber,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       toast({
@@ -154,6 +180,8 @@ export default function EmployeesPage() {
       });
       setIsAddModalOpen(false);
       setNewEmployee({
+        idNumber: "",
+        department: "IT",
         firstName: "",
         lastName: "",
         email: "",
@@ -165,7 +193,18 @@ export default function EmployeesPage() {
         avatar: "",
       });
     },
-    onError: () => {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      if (error?.errors?.length) {
+        console.error(
+          "createEmployee GraphQL error message:",
+          error.errors[0].message,
+          error.errors,
+        );
+      } else {
+        console.error("createEmployee GraphQL error raw:", error);
+      }
+
       toast({
         title: "Error",
         description: "Unable to add employee.",
@@ -178,6 +217,7 @@ export default function EmployeesPage() {
     e.preventDefault();
 
     if (
+      !newEmployee.idNumber.trim() ||
       !newEmployee.firstName.trim() ||
       !newEmployee.lastName.trim() ||
       !newEmployee.email.trim() ||
@@ -185,7 +225,8 @@ export default function EmployeesPage() {
     ) {
       toast({
         title: "Validation error",
-        description: "First name, last name, email, and role are required.",
+        description:
+          "ID number, first name, last name, email, and role are required.",
         variant: "destructive",
       });
       return;
@@ -323,6 +364,43 @@ export default function EmployeesPage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">ID Number *</label>
+                  <Input
+                    value={newEmployee.idNumber}
+                    onChange={(e) =>
+                      setNewEmployee((prev) => ({
+                        ...prev,
+                        idNumber: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g. 0001"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Department *</label>
+                  <Select
+                    value={newEmployee.department}
+                    onValueChange={(v) =>
+                      setNewEmployee((prev) => ({
+                        ...prev,
+                        department: v as Department,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="IT">IT</SelectItem>
+                      <SelectItem value="Education">Education</SelectItem>
+                      <SelectItem value="HR">HR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">Avatar URL</label>
                 <Input
@@ -397,8 +475,6 @@ export default function EmployeesPage() {
                 }}
               />
             </div>
-
-            {/* (Filters can be re-enabled later) */}
           </div>
         </CardHeader>
 
