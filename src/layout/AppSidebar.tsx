@@ -26,7 +26,7 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/employees", label: "Employees", icon: Users },
   { path: "/leave", label: "Leave Management", icon: Calendar },
-  { path: "/performance", label: "Performance", icon: BarChart3 },
+  //{ path: "/performance", label: "Performance", icon: BarChart3 },
   { path: "/admin", label: "Admin", icon: Settings },
 ];
 

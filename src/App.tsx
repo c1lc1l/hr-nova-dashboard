@@ -1,10 +1,12 @@
 // App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth, RequireAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/layout/AppLayout";
+
 import LoginPage from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Employees from "@/pages/Employees";
@@ -16,19 +18,24 @@ import Analytics from "@/pages/Analytics";
 import Admin from "@/pages/Admin";
 import AuditLogs from "@/pages/AuditLogs";
 import NotFound from "@/pages/NotFound";
-import { Amplify } from "aws-amplify";
-import awsExports from "./aws-exports";
-
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  const isHrOrSysAdmin =
+    user?.role === "HR Admin" || user?.role === "System Admin";
+
+  // Default landing page once authenticated:
+  // - HR/System Admin → dashboard
+  // - Employee → leave management
+  const defaultAuthenticatedPath = isHrOrSysAdmin ? "/dashboard" : "/leave";
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
   }
@@ -46,18 +53,24 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* if already authenticated and URL is /login, push to dashboard */}
-      <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+      {/* if already authenticated and URL is /login, go to role‑based default */}
+      <Route
+        path="/login"
+        element={<Navigate to={defaultAuthenticatedPath} replace />}
+      />
 
       <Route element={<AppLayout />}>
+        {/* Dashboard – only HR/System Admin for now */}
         <Route
           path="/dashboard"
           element={
-            <RequireAuth module="Dashboard">
+            <RequireAuth module="Dashboard" roles={["System Admin", "HR Admin"]}>
               <Dashboard user={user} />
             </RequireAuth>
           }
         />
+
+        {/* Employees list – HR/System Admin only */}
         <Route
           path="/employees"
           element={
@@ -66,6 +79,8 @@ function AppRoutes() {
             </RequireAuth>
           }
         />
+
+        {/* Employee detail – HR/System Admin only */}
         <Route
           path="/employees/:id"
           element={
@@ -74,6 +89,8 @@ function AppRoutes() {
             </RequireAuth>
           }
         />
+
+        {/* Leave management – everyone with access to Leave module (employees land here by default) */}
         <Route
           path="/leave"
           element={
@@ -82,10 +99,15 @@ function AppRoutes() {
             </RequireAuth>
           }
         />
+
+        {/* Performance – HR/System Admin only */}
         <Route
           path="/performance"
           element={
-            <RequireAuth module="Performance" roles={["System Admin", "HR Admin"]}>
+            <RequireAuth
+              module="Performance"
+              roles={["System Admin", "HR Admin"]}
+            >
               <PerformanceReview />
             </RequireAuth>
           }
@@ -93,11 +115,16 @@ function AppRoutes() {
         <Route
           path="/performance/:id"
           element={
-            <RequireAuth module="Performance" roles={["System Admin", "HR Admin"]}>
+            <RequireAuth
+              module="Performance"
+              roles={["System Admin", "HR Admin"]}
+            >
               <PerformanceDetail />
             </RequireAuth>
           }
         />
+
+        {/* Analytics – currently assume HR/System Admin via module config, or widen later */}
         <Route
           path="/analytics"
           element={
@@ -106,6 +133,8 @@ function AppRoutes() {
             </RequireAuth>
           }
         />
+
+        {/* Admin & Audit – HR/System Admin only */}
         <Route
           path="/admin"
           element={
@@ -124,7 +153,12 @@ function AppRoutes() {
         />
       </Route>
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* Root: send authenticated users to their role‑based default */}
+      <Route
+        path="/"
+        element={<Navigate to={defaultAuthenticatedPath} replace />}
+      />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

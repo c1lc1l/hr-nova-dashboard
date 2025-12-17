@@ -48,7 +48,7 @@ export function TopBar({ user, onLogout }: TopBarProps) {
     <>
       <header className="h-16 bg-card border-b border-border flex items-center px-6">
         {/* Left: search */}
-        <div className="flex-[2]">
+        {/* <div className="flex-[2]">
           <div className="relative w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -56,7 +56,7 @@ export function TopBar({ user, onLogout }: TopBarProps) {
               className="pl-10 bg-background"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Center: reserved for page title (optional, currently empty) */}
         <div className="flex-1 flex justify-center" />
@@ -64,7 +64,7 @@ export function TopBar({ user, onLogout }: TopBarProps) {
         {/* Right: notifications + user */}
         <div className="flex-[2] flex items-center gap-4 justify-end">
           {/* Notifications */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
@@ -95,7 +95,7 @@ export function TopBar({ user, onLogout }: TopBarProps) {
                 </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           {/* User Profile */}
           <DropdownMenu>

@@ -74,6 +74,16 @@ export interface LeaveBalance {
   used: number;
 }
 
+// === AI Analytics ===
+export type InsightSeverity = "info" | "warning" | "critical";
+
+export interface AiInsight {
+  id: string;
+  title: string;
+  body: string;
+  severity: InsightSeverity;
+}
+
 // === Performance Types ===
 export type ReviewStatus = 'Completed' | 'In Progress' | 'Not Started';
 

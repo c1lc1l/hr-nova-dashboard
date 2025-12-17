@@ -1,43 +1,65 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-interface BarChartCardProps {
+export interface BarChartCardProps<T> {
   title: string;
-  data: Array<{ [key: string]: string | number }>;
-  dataKey: string;
-  xAxisKey: string;
+  data: T[];
+  dataKey: keyof T;
+  xAxisKey: keyof T;
 }
 
-export function BarChartCard({ title, data, dataKey, xAxisKey }: BarChartCardProps) {
+export function BarChartCard<T>({
+  title,
+  data,
+  dataKey,
+  xAxisKey,
+}: BarChartCardProps<T>) {
   return (
     <Card className="bg-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-card-foreground">{title}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-card-foreground">
+          {title}
+        </CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis 
-                dataKey={xAxisKey} 
+            <BarChart
+              data={data}
+              margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                className="stroke-border"
+              />
+              <XAxis
+                dataKey={xAxisKey as string}
                 tick={{ fontSize: 11 }}
                 className="text-muted-foreground"
               />
-              <YAxis 
+              <YAxis
                 tick={{ fontSize: 12 }}
                 className="text-muted-foreground"
               />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: 'var(--radius)'
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "var(--radius)",
                 }}
               />
-              <Bar 
-                dataKey={dataKey} 
-                fill="hsl(var(--primary))" 
+              <Bar
+                dataKey={dataKey as string}
+                fill="hsl(var(--primary))"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
