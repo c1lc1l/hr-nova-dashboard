@@ -54,9 +54,9 @@ function mapCognitoToUser(cognitoUser: any | undefined): User | null {
     cognitoUser?.signInUserSession?.idToken?.payload?.["cognito:groups"] || [];
 
   let role: AppRole = "Employee";
-  if (groups.includes("SystemAdmin")) role = "System Admin";
+  if (groups.includes("SysAdmin")) role = "System Admin";
   else if (groups.includes("HRAdmin")) role = "HR Admin";
-  else if (groups.includes("Manager")) role = "Manager";
+  else if (groups.includes("Employee")) role = "Employee";
 
   return {
     id: attrs.sub || cognitoUser.username || "",

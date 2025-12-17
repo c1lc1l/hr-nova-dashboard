@@ -77,7 +77,7 @@ function AppRoutes() {
         <Route
           path="/performance"
           element={
-            <RequireAuth module="Performance">
+            <RequireAuth module="Performance" roles={["System Admin", "HR Admin"]}>
               <PerformanceReview />
             </RequireAuth>
           }
@@ -85,7 +85,7 @@ function AppRoutes() {
         <Route
           path="/performance/:id"
           element={
-            <RequireAuth module="Performance">
+            <RequireAuth module="Performance" roles={["System Admin", "HR Admin"]}>
               <PerformanceDetail />
             </RequireAuth>
           }
@@ -109,7 +109,7 @@ function AppRoutes() {
         <Route
           path="/admin/audit"
           element={
-            <RequireAuth roles={["System Admin"]} module="Audit">
+            <RequireAuth roles={["System Admin", "HR Admin"]} module="Audit">
               <AuditLogs />
             </RequireAuth>
           }
