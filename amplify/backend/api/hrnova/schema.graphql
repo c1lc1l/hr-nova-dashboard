@@ -1,3 +1,22 @@
+type Employee
+  @model
+  @auth(rules: [
+    { allow: groups, groups: ["SysAdmin", "HRAdmin"], operations: [create, read, update, delete] }
+    { allow: groups, groups: ["Manager"], operations: [read] }
+    { allow: owner, ownerField: "id", operations: [read] }
+  ]) {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  role: String!
+  city: String
+  joiningDate: AWSDate
+  phone: String
+  status: String!
+  avatar: AWSURL
+}
+
 type LeaveRequest
   @model
   @auth(

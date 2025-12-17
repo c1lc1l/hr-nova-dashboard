@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { KpiCard } from '@/components/charts/KpiCard';
 import { LineChartCard } from '@/components/charts/LineChartCard';
@@ -8,6 +11,11 @@ import { PageHeader } from '@/components/PageHeader';
 import { Users, Calendar, Clock, Brain, FileText, UserCheck, Star, CheckCircle } from 'lucide-react';
 import { mockActivities, performanceChartData, employeeStatsData } from '@/services/mockData';
 import { User } from '@/types';
+import {
+  fetchMyLeave,
+  fetchPendingLeave,
+} from "@/services/leaveApi";
+import { LeaveRequest } from "@/types";
 
 interface DashboardProps {
   user: User | null;
@@ -15,6 +23,25 @@ interface DashboardProps {
 
 export default function Dashboard({ user }: DashboardProps) {
   const navigate = useNavigate();
+  const { hasRole } = useAuth();
+
+  const canApprove = hasRole(["System Admin", "HR Admin", "Manager"]);
+
+  const pendingQuery = useQuery({
+    queryKey: ["pending-leave-dashboard"],
+    queryFn: fetchPendingLeave,
+    enabled: canApprove,
+  });
+
+  // Calculate pending leaves count
+  const pendingLeavesCount = useMemo(() => {
+    if (!canApprove) return "0";         // employees with no approval rights see 0
+    const approverPending =
+      ((pendingQuery.data as LeaveRequest[]) || []).filter(
+        (leave) => leave.status === "Pending"
+      );
+    return approverPending.length.toString();
+  }, [pendingQuery.data, canApprove]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -29,7 +56,7 @@ export default function Dashboard({ user }: DashboardProps) {
   return (
     <main className="space-y-6">
       <PageHeader
-        title={`Welcome Back!`} //, ${user?.firstName || 'Admin'}
+        title={`Welcome Back!`}
         description="Here's what's happening in your organization today."
       />
 
@@ -44,7 +71,7 @@ export default function Dashboard({ user }: DashboardProps) {
         />
         <KpiCard
           title="Pending Leaves"
-          value="12"
+          value={pendingLeavesCount}
           trend={-2}
           icon={<Calendar className="h-6 w-6 text-primary" />}
           onViewDetails={() => navigate('/leave')}
@@ -57,7 +84,7 @@ export default function Dashboard({ user }: DashboardProps) {
         />
       </div>
 
-      {/* Main Content Grid */}
+      {/* Rest of the component remains exactly the same */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - AI Insights & Chart */}
         <div className="lg:col-span-2 space-y-6">
