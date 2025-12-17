@@ -25,7 +25,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Filter } from "lucide-react";
-import { LeaveRequest, LeaveType, LeaveStatus, LeaveRequestFormData } from "@/types";
+import {
+  LeaveRequest,
+  LeaveType,
+  LeaveStatus,
+  LeaveRequestFormData,
+} from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -43,7 +48,13 @@ const leaveTypes: LeaveType[] = [
   "Paternity",
   "Unpaid",
 ];
-const leaveStatuses: LeaveStatus[] = ["Pending", "Approved", "Rejected", "Cancelled"];
+
+const leaveStatuses: LeaveStatus[] = [
+  "Pending",
+  "Approved",
+  "Rejected",
+  "Cancelled",
+];
 
 export default function LeaveManagement() {
   const { toast } = useToast();
@@ -87,7 +98,7 @@ export default function LeaveManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-leave"] });
       toast({
-        title: "Leave Request Submitted",
+        title: "Leave request submitted",
         description: "Your leave request has been submitted for approval.",
       });
       setFormData({ type: "Annual", fromDate: "", toDate: "", reason: "" });
@@ -153,8 +164,8 @@ export default function LeaveManagement() {
 
     if (!formData.type || !formData.fromDate || !formData.toDate) {
       toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
+        title: "Validation error",
+        description: "Please fill in all required fields.",
         variant: "destructive",
       });
       return;
@@ -170,7 +181,7 @@ export default function LeaveManagement() {
       render: (leave: LeaveRequest) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={leave.employeeAvatar} />
+            <AvatarImage src={leave.employeeAvatar ?? undefined} />
             <AvatarFallback className="bg-primary/10 text-primary text-xs">
               {leave.employeeName
                 .split(" ")
@@ -283,7 +294,7 @@ export default function LeaveManagement() {
                   <span className="font-semibold text-card-foreground">
                     15 days
                   </span>
-                  {/* later: pull from real LeaveBalance */}
+                  {/* TODO: hook up real LeaveBalance */}
                 </p>
               </div>
 
@@ -304,7 +315,7 @@ export default function LeaveManagement() {
         </Dialog>
       </div>
 
-      {/* Table Card */}
+      {/* My leave table */}
       <Card className="bg-card">
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -363,7 +374,7 @@ export default function LeaveManagement() {
         </CardContent>
       </Card>
 
-      {/* Optional: Pending approvals section for HR/Admin/Manager */}
+      {/* Pending approvals for approvers */}
       {canApprove && (
         <Card className="bg-card">
           <CardHeader>

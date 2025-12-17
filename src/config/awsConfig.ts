@@ -23,4 +23,11 @@ Amplify.configure({
       },
     },
   },
+  API: {
+    GraphQL: {
+      endpoint: "https://qpxtbjchxfgdzlux6lj4m3x6pa.appsync-api.ap-southeast-1.amazonaws.com/graphql",
+      region: "ap-southeast-1",
+      defaultAuthMode: "userPool",
+    },
+  },
 });
