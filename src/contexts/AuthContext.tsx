@@ -45,12 +45,14 @@ const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildUserFromSession(session: any): User | null {
-  const idToken = session?.tokens?.idToken;
+function buildUserFromSession(session: unknown): User | null {
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const idToken = (session as any)?.tokens?.idToken;
   if (!idToken) return null;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const claims: any = idToken.payload ?? {};
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims = (idToken as any).payload ?? {};
+  console.log("FULL CLAIMS", claims);
+
   const groups: string[] = (claims["cognito:groups"] as string[]) || [];
   console.log("Cognito groups:", groups);
 
@@ -71,6 +73,7 @@ function buildUserFromSession(session: any): User | null {
 
 
 
+
 interface AuthProviderProps {
   children: React.ReactNode;
 }
@@ -85,8 +88,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
   (async () => {
     try {
-      const session = await fetchAuthSession({ forceRefresh: false });
-      const user = buildUserFromSession(session); // your helper using idToken
+      const session = await fetchAuthSession({ forceRefresh: true });
+
+      // 1) Define claims here
+      const claims = session.tokens?.idToken?.payload ?? {};
+      console.log("claims", claims.given_name, claims.family_name);
+
+      // 2) Build your user from those claims
+      const user = buildUserFromSession(session);
+
       if (user) {
         const idToken = session.tokens?.idToken?.toString() ?? "";
         localStorage.setItem(config.auth.tokenStorageKey, idToken);
@@ -103,6 +113,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 
 
+
 const login = useCallback(
   async (email: string, password: string): Promise<User> => {
     setState(prev => ({ ...prev, isLoading: true }));
@@ -114,7 +125,7 @@ const login = useCallback(
         throw new Error("Additional auth step required");
       }
 
-      const session = await fetchAuthSession({ forceRefresh: false});
+      const session = await fetchAuthSession({ forceRefresh: true });
       console.log("session tokens after login:", session.tokens);
 
       const user = buildUserFromSession(session);

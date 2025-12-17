@@ -112,7 +112,8 @@ export function TopBar({ user, onLogout }: TopBarProps) {
                   <p className="text-sm font-medium">
                     {user?.firstName} {user?.lastName}
                   </p>
-                  <p className="text-xs text-muted-foreground">{user?.role}</p>
+                  {/* Remove or comment out this line if you don't want to see the app role */}
+                  {/* <p className="text-xs text-muted-foreground">{user?.role}</p> */}
                 </div>
               </Button>
             </DropdownMenuTrigger>

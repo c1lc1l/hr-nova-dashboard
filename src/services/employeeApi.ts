@@ -30,7 +30,18 @@ type CreateEmployeeInput = {
 type CreateEmployeeResult = {
   createEmployee: Employee;
 };
+export interface EmployeeStats {
+  department: string;
+  count: number;
+}
 
+export async function fetchEmployeeStats(): Promise<EmployeeStats[]> {
+  const response = await fetch('/api/employee/stats', {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!response.ok) throw new Error('Failed to fetch stats');
+  return response.json();
+}
 export async function fetchEmployees(): Promise<Employee[]> {
   const res = (await client.graphql({
     query: /* GraphQL */ `
@@ -58,6 +69,11 @@ export async function fetchEmployees(): Promise<Employee[]> {
   })) as GraphQLResult<ListEmployeesResult>;
 
   return res.data?.listEmployees.items ?? [];
+}
+
+export async function fetchEmployeeCount(): Promise<number> {
+  const employees = await fetchEmployees();
+  return employees.length;
 }
 
 export async function createEmployee(

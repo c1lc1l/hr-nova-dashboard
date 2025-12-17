@@ -1,21 +1,35 @@
-import { useMemo } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { KpiCard } from '@/components/charts/KpiCard';
-import { LineChartCard } from '@/components/charts/LineChartCard';
-import { BarChartCard } from '@/components/charts/BarChartCard';
-import { StatusChip } from '@/components/ui/status-chip';
-import { PageHeader } from '@/components/PageHeader';
-import { Users, Calendar, Clock, Brain, FileText, UserCheck, Star, CheckCircle } from 'lucide-react';
-import { mockActivities, performanceChartData, employeeStatsData } from '@/services/mockData';
-import { User } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { KpiCard } from "@/components/charts/KpiCard";
+import { LineChartCard } from "@/components/charts/LineChartCard";
+import { BarChartCard } from "@/components/charts/BarChartCard";
+import { StatusChip } from "@/components/ui/status-chip";
+import { PageHeader } from "@/components/PageHeader";
+
 import {
-  fetchMyLeave,
-  fetchPendingLeave,
-} from "@/services/leaveApi";
-import { LeaveRequest } from "@/types";
+  Users,
+  Calendar,
+  Clock,
+  Brain,
+  FileText,
+  UserCheck,
+  Star,
+  CheckCircle,
+} from "lucide-react";
+
+import {
+  mockActivities,
+  performanceChartData,
+  employeeStatsData,
+} from "@/services/mockData";
+
+import { User, LeaveRequest } from "@/types";
+import { fetchMyLeave, fetchPendingLeave } from "@/services/leaveApi";
+import { fetchEmployeeCount } from "@/services/employeeApi";
 
 interface DashboardProps {
   user: User | null;
@@ -25,6 +39,8 @@ export default function Dashboard({ user }: DashboardProps) {
   const navigate = useNavigate();
   const { hasRole } = useAuth();
 
+  const [employeeCount, setEmployeeCount] = useState<string>("0");
+
   const canApprove = hasRole(["System Admin", "HR Admin", "Manager"]);
 
   const pendingQuery = useQuery({
@@ -33,9 +49,21 @@ export default function Dashboard({ user }: DashboardProps) {
     enabled: canApprove,
   });
 
+  // Fetch total employees once for the KPI
+  useEffect(() => {
+    (async () => {
+      try {
+        const count = await fetchEmployeeCount();
+        setEmployeeCount(count.toString());
+      } catch {
+        setEmployeeCount("0");
+      }
+    })();
+  }, []);
+
   // Calculate pending leaves count
   const pendingLeavesCount = useMemo(() => {
-    if (!canApprove) return "0";         // employees with no approval rights see 0
+    if (!canApprove) return "0";
     const approverPending =
       ((pendingQuery.data as LeaveRequest[]) || []).filter(
         (leave) => leave.status === "Pending"
@@ -45,18 +73,23 @@ export default function Dashboard({ user }: DashboardProps) {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'leave': return <Calendar className="h-4 w-4 text-primary" />;
-      case 'employee': return <UserCheck className="h-4 w-4 text-emerald-500" />;
-      case 'review': return <Star className="h-4 w-4 text-amber-500" />;
-      case 'document': return <FileText className="h-4 w-4 text-violet-500" />;
-      default: return <CheckCircle className="h-4 w-4" />;
+      case "leave":
+        return <Calendar className="h-4 w-4 text-primary" />;
+      case "employee":
+        return <UserCheck className="h-4 w-4 text-emerald-500" />;
+      case "review":
+        return <Star className="h-4 w-4 text-amber-500" />;
+      case "document":
+        return <FileText className="h-4 w-4 text-violet-500" />;
+      default:
+        return <CheckCircle className="h-4 w-4" />;
     }
   };
 
   return (
     <main className="space-y-6">
       <PageHeader
-        title={`Welcome Back!`}
+        title="Welcome Back!"
         description="Here's what's happening in your organization today."
       />
 
@@ -64,17 +97,17 @@ export default function Dashboard({ user }: DashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <KpiCard
           title="Total Employees"
-          value="248"
+          value={employeeCount}
           trend={5.2}
           icon={<Users className="h-6 w-6 text-primary" />}
-          onViewDetails={() => navigate('/employees')}
+          onViewDetails={() => navigate("/employees")}
         />
         <KpiCard
           title="Pending Leaves"
           value={pendingLeavesCount}
           trend={-2}
           icon={<Calendar className="h-6 w-6 text-primary" />}
-          onViewDetails={() => navigate('/leave')}
+          onViewDetails={() => navigate("/leave")}
         />
         <KpiCard
           title="Attendance Rate"
@@ -84,7 +117,7 @@ export default function Dashboard({ user }: DashboardProps) {
         />
       </div>
 
-      {/* Rest of the component remains exactly the same */}
+      {/* Rest of the component */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - AI Insights & Chart */}
         <div className="lg:col-span-2 space-y-6">
@@ -106,9 +139,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                   </div>
                   <div>
-                    <p className="font-medium text-amber-800 dark:text-amber-200">Attrition Risk Alert</p>
+                    <p className="font-medium text-amber-800 dark:text-amber-200">
+                      Attrition Risk Alert
+                    </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                      3 employees in Engineering show high attrition risk based on engagement patterns. Consider scheduling 1-on-1s.
+                      3 employees in Engineering show high attrition risk based
+                      on engagement patterns. Consider scheduling 1-on-1s.
                     </p>
                   </div>
                 </div>
@@ -120,9 +156,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     <div className="w-2 h-2 bg-blue-500 rounded-full" />
                   </div>
                   <div>
-                    <p className="font-medium text-blue-800 dark:text-blue-200">Leave Pattern Anomaly</p>
+                    <p className="font-medium text-blue-800 dark:text-blue-200">
+                      Leave Pattern Anomaly
+                    </p>
                     <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                      Unusual increase in sick leave requests detected in Q4. Suggest reviewing workload distribution.
+                      Unusual increase in sick leave requests detected in Q4.
+                      Suggest reviewing workload distribution.
                     </p>
                   </div>
                 </div>
@@ -134,9 +173,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                   </div>
                   <div>
-                    <p className="font-medium text-emerald-800 dark:text-emerald-200">Performance Forecast</p>
+                    <p className="font-medium text-emerald-800 dark:text-emerald-200">
+                      Performance Forecast
+                    </p>
                     <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">
-                      Overall team performance trending 8% higher than last quarter. Design team leads improvement.
+                      Overall team performance trending 8% higher than last
+                      quarter. Design team leads improvement.
                     </p>
                   </div>
                 </div>
@@ -175,8 +217,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     {getActivityIcon(activity.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-card-foreground line-clamp-2">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{activity.timestamp}</p>
+                    <p className="text-sm text-card-foreground line-clamp-2">
+                      {activity.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {activity.timestamp}
+                    </p>
                   </div>
                 </div>
               ))}
