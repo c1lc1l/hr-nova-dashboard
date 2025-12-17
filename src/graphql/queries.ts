@@ -107,6 +107,8 @@ export const listLeaveBalances = /* GraphQL */ `query ListLeaveBalances(
 export const getEmployee = /* GraphQL */ `query GetEmployee($id: ID!) {
   getEmployee(id: $id) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email
@@ -135,6 +137,8 @@ export const listEmployees = /* GraphQL */ `query ListEmployees(
   listEmployees(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      cognitoId
+      cognitoRole
       firstName
       lastName
       email

@@ -152,6 +152,8 @@ export const createEmployee = /* GraphQL */ `mutation CreateEmployee(
 ) {
   createEmployee(input: $input, condition: $condition) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email
@@ -178,6 +180,8 @@ export const updateEmployee = /* GraphQL */ `mutation UpdateEmployee(
 ) {
   updateEmployee(input: $input, condition: $condition) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email
@@ -204,6 +208,8 @@ export const deleteEmployee = /* GraphQL */ `mutation DeleteEmployee(
 ) {
   deleteEmployee(input: $input, condition: $condition) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email

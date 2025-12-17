@@ -1,3 +1,4 @@
+# HR Nova schema – updated Employee model with cognitoId and cognitoRole fields
 type LeaveRequest
   @model
   @auth(
@@ -46,12 +47,13 @@ type Employee
   @auth(
     rules: [
       { allow: groups, groups: ["SysAdmin", "HRAdmin"], operations: [create, read, update, delete] }
-      { allow: groups, groups: ["Manager"], operations: [read] }
-      # Optional: employees can read their own record if id == sub
-      { allow: owner, ownerField: "id", operations: [read] }
+      { allow: groups, groups: ["Manager"], operations: [read, update] }
+      { allow: owner, ownerField: "cognitoId", operations: [read] }
     ]
   ) {
-  id: ID!                # will be like "0001-PCU-IT"
+  id: ID!
+  cognitoId: ID!        # maps to Cognito sub
+  cognitoRole: String!  # "SysAdmin" | "HRAdmin" | "Employee"
   firstName: String!
   lastName: String!
   email: AWSEmail!
@@ -61,6 +63,6 @@ type Employee
   phone: String
   status: String!
   avatar: AWSURL
-  department: String!    # "IT" | "Education" | "HR"
-  idNumber: String!      # raw numeric/short part if you want to store it
+  department: String!
+  idNumber: String!
 }

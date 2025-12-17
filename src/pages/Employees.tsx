@@ -32,6 +32,7 @@ import { Search, Plus } from "lucide-react";
 import type { Employee } from "@/types";
 import { fetchEmployees, createEmployee } from "@/services/employeeApi";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Department = "IT" | "Education" | "HR";
 
@@ -53,6 +54,7 @@ export default function EmployeesPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -152,13 +154,21 @@ export default function EmployeesPage() {
 
   const createEmployeeMutation = useMutation({
     mutationFn: (values: NewEmployeeForm) => {
+      if (!user) {
+        throw new Error("No authenticated user");
+      }
+
       const formattedId = `${values.idNumber}-PCU-${values.department}`;
       const fullName = `${values.firstName.trim()} ${values.lastName.trim()}`;
-      const encodedName = encodeURIComponent(fullName); // handles spaces, ñ, etc.
+      const encodedName = encodeURIComponent(fullName);
       const defaultAvatar = `https://avatar.iran.liara.run/username?username=${encodedName}`;
+
+      const appRole = user.role; // "System Admin" | "HR Admin" | "Manager" | "Employee"
 
       return createEmployee({
         id: formattedId,
+        cognitoId: user.id,
+        cognitoRole: appRole,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -216,7 +226,10 @@ export default function EmployeesPage() {
   const handleAddEmployeeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const idTrimmed = newEmployee.idNumber.trim();
+    
     if (
+      !idTrimmed ||
       !newEmployee.idNumber.trim() ||
       !newEmployee.firstName.trim() ||
       !newEmployee.lastName.trim() ||
@@ -231,7 +244,14 @@ export default function EmployeesPage() {
       });
       return;
     }
-
+    if (!/^\d{4}$/.test(idTrimmed)) {
+    toast({
+      title: "Validation error",
+      description: "ID number must be exactly 4 digits (e.g. 0001, 0601).",
+      variant: "destructive",
+    });
+    return;
+  }
     createEmployeeMutation.mutate(newEmployee);
   };
 
@@ -369,13 +389,17 @@ export default function EmployeesPage() {
                   <label className="text-sm font-medium">ID Number *</label>
                   <Input
                     value={newEmployee.idNumber}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, ""); // strip non-digits
+                      const fourDigits = raw.slice(0, 4);
                       setNewEmployee((prev) => ({
                         ...prev,
-                        idNumber: e.target.value,
-                      }))
-                    }
+                        idNumber: fourDigits,
+                      }));
+                    }}
                     placeholder="e.g. 0001"
+                    inputMode="numeric"
+                    maxLength={4}
                   />
                 </div>
                 <div className="space-y-2">

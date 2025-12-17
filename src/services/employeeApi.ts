@@ -11,13 +11,15 @@ type ListEmployeesResult = {
 };
 
 type CreateEmployeeInput = {
-  id: string;           // "idNumber-PCU-Department"
+  id: string;            // "idNumber-PCU-Department"
+  cognitoId: string;     // maps to Cognito sub
+  cognitoRole: string;   // "System Admin" | "HR Admin" | "Manager" | "Employee"
   firstName: string;
   lastName: string;
   email: string;
   role: string;
   city?: string;
-  joiningDate?: string; // AWSDate: "YYYY-MM-DD"
+  joiningDate?: string;  // AWSDate: "YYYY-MM-DD"
   phone?: string;
   status: string;
   avatar?: string;
@@ -36,6 +38,8 @@ export async function fetchEmployees(): Promise<Employee[]> {
         listEmployees {
           items {
             id
+            cognitoId
+            cognitoRole
             firstName
             lastName
             email
@@ -64,6 +68,8 @@ export async function createEmployee(
       mutation CreateEmployee($input: CreateEmployeeInput!) {
         createEmployee(input: $input) {
           id
+          cognitoId
+          cognitoRole
           firstName
           lastName
           email

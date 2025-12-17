@@ -148,10 +148,12 @@ export const onDeleteLeaveBalance = /* GraphQL */ `subscription OnDeleteLeaveBal
 >;
 export const onCreateEmployee = /* GraphQL */ `subscription OnCreateEmployee(
   $filter: ModelSubscriptionEmployeeFilterInput
-  $id: String
+  $cognitoId: String
 ) {
-  onCreateEmployee(filter: $filter, id: $id) {
+  onCreateEmployee(filter: $filter, cognitoId: $cognitoId) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email
@@ -174,10 +176,12 @@ export const onCreateEmployee = /* GraphQL */ `subscription OnCreateEmployee(
 >;
 export const onUpdateEmployee = /* GraphQL */ `subscription OnUpdateEmployee(
   $filter: ModelSubscriptionEmployeeFilterInput
-  $id: String
+  $cognitoId: String
 ) {
-  onUpdateEmployee(filter: $filter, id: $id) {
+  onUpdateEmployee(filter: $filter, cognitoId: $cognitoId) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email
@@ -200,10 +204,12 @@ export const onUpdateEmployee = /* GraphQL */ `subscription OnUpdateEmployee(
 >;
 export const onDeleteEmployee = /* GraphQL */ `subscription OnDeleteEmployee(
   $filter: ModelSubscriptionEmployeeFilterInput
-  $id: String
+  $cognitoId: String
 ) {
-  onDeleteEmployee(filter: $filter, id: $id) {
+  onDeleteEmployee(filter: $filter, cognitoId: $cognitoId) {
     id
+    cognitoId
+    cognitoRole
     firstName
     lastName
     email

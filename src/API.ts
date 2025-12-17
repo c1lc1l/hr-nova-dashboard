@@ -192,6 +192,8 @@ export type DeleteLeaveBalanceInput = {
 
 export type CreateEmployeeInput = {
   id?: string | null,
+  cognitoId: string,
+  cognitoRole: string,
   firstName: string,
   lastName: string,
   email: string,
@@ -206,6 +208,8 @@ export type CreateEmployeeInput = {
 };
 
 export type ModelEmployeeConditionInput = {
+  cognitoId?: ModelIDInput | null,
+  cognitoRole?: ModelStringInput | null,
   firstName?: ModelStringInput | null,
   lastName?: ModelStringInput | null,
   email?: ModelStringInput | null,
@@ -222,12 +226,13 @@ export type ModelEmployeeConditionInput = {
   not?: ModelEmployeeConditionInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  id?: ModelStringInput | null,
 };
 
 export type Employee = {
   __typename: "Employee",
   id: string,
+  cognitoId: string,
+  cognitoRole: string,
   firstName: string,
   lastName: string,
   email: string,
@@ -245,6 +250,8 @@ export type Employee = {
 
 export type UpdateEmployeeInput = {
   id: string,
+  cognitoId?: string | null,
+  cognitoRole?: string | null,
   firstName?: string | null,
   lastName?: string | null,
   email?: string | null,
@@ -310,6 +317,8 @@ export type ModelLeaveBalanceConnection = {
 
 export type ModelEmployeeFilterInput = {
   id?: ModelIDInput | null,
+  cognitoId?: ModelIDInput | null,
+  cognitoRole?: ModelStringInput | null,
   firstName?: ModelStringInput | null,
   lastName?: ModelStringInput | null,
   email?: ModelStringInput | null,
@@ -409,6 +418,8 @@ export type ModelSubscriptionLeaveBalanceFilterInput = {
 };
 
 export type ModelSubscriptionEmployeeFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  cognitoRole?: ModelSubscriptionStringInput | null,
   firstName?: ModelSubscriptionStringInput | null,
   lastName?: ModelSubscriptionStringInput | null,
   email?: ModelSubscriptionStringInput | null,
@@ -424,7 +435,7 @@ export type ModelSubscriptionEmployeeFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionEmployeeFilterInput | null > | null,
   or?: Array< ModelSubscriptionEmployeeFilterInput | null > | null,
-  id?: ModelStringInput | null,
+  cognitoId?: ModelStringInput | null,
 };
 
 export type CreateLeaveRequestMutationVariables = {
@@ -568,6 +579,8 @@ export type CreateEmployeeMutation = {
   createEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -593,6 +606,8 @@ export type UpdateEmployeeMutation = {
   updateEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -618,6 +633,8 @@ export type DeleteEmployeeMutation = {
   deleteEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -738,6 +755,8 @@ export type GetEmployeeQuery = {
   getEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -766,6 +785,8 @@ export type ListEmployeesQuery = {
     items:  Array< {
       __typename: "Employee",
       id: string,
+      cognitoId: string,
+      cognitoRole: string,
       firstName: string,
       lastName: string,
       email: string,
@@ -918,13 +939,15 @@ export type OnDeleteLeaveBalanceSubscription = {
 
 export type OnCreateEmployeeSubscriptionVariables = {
   filter?: ModelSubscriptionEmployeeFilterInput | null,
-  id?: string | null,
+  cognitoId?: string | null,
 };
 
 export type OnCreateEmployeeSubscription = {
   onCreateEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -943,13 +966,15 @@ export type OnCreateEmployeeSubscription = {
 
 export type OnUpdateEmployeeSubscriptionVariables = {
   filter?: ModelSubscriptionEmployeeFilterInput | null,
-  id?: string | null,
+  cognitoId?: string | null,
 };
 
 export type OnUpdateEmployeeSubscription = {
   onUpdateEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -968,13 +993,15 @@ export type OnUpdateEmployeeSubscription = {
 
 export type OnDeleteEmployeeSubscriptionVariables = {
   filter?: ModelSubscriptionEmployeeFilterInput | null,
-  id?: string | null,
+  cognitoId?: string | null,
 };
 
 export type OnDeleteEmployeeSubscription = {
   onDeleteEmployee?:  {
     __typename: "Employee",
     id: string,
+    cognitoId: string,
+    cognitoRole: string,
     firstName: string,
     lastName: string,
     email: string,

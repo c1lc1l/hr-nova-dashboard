@@ -1,20 +1,16 @@
-import { NavLink, Outlet } from 'react-router-dom';
-import { AppSidebar } from './AppSidebar';
-import { TopBar } from './TopBar';
-import { User } from '@/types';
+import { NavLink, Outlet } from "react-router-dom";
+import { AppSidebar } from "./AppSidebar";
+import { TopBar } from "./TopBar";
 import { useAuth } from "@/contexts/AuthContext";
 
-interface AppLayoutProps {
-  user: User | null;
-  onLogout: () => Promise<void>;
-}
+export function AppLayout() {
+  const { user, logout } = useAuth();
 
-export function AppLayout({ user, onLogout }: AppLayoutProps) {
   return (
     <div className="flex h-screen w-full bg-background">
-      <AppSidebar onLogout={onLogout} />
+      <AppSidebar onLogout={logout} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopBar user={user} onLogout={onLogout} />
+        <TopBar user={user} onLogout={logout} />
         <main className="flex-1 overflow-auto p-6">
           <Outlet />
         </main>
@@ -36,9 +32,7 @@ function SidebarLinks() {
         <NavLink to="/employees">Employees</NavLink>
       )}
 
-      {canAccessModule("Leave") && (
-        <NavLink to="/leave">Leave</NavLink>
-      )}
+      {canAccessModule("Leave") && <NavLink to="/leave">Leave</NavLink>}
 
       {canAccessModule("Performance") && (
         <NavLink to="/performance">Performance</NavLink>

@@ -49,7 +49,7 @@ function AppRoutes() {
       {/* if already authenticated and URL is /login, push to dashboard */}
       <Route path="/login" element={<Navigate to="/dashboard" replace />} />
 
-      <Route element={<AppLayout user={user} onLogout={logout} />}>
+      <Route element={<AppLayout />}>
         <Route
           path="/dashboard"
           element={
