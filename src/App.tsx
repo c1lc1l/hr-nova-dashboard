@@ -16,6 +16,9 @@ import Analytics from "@/pages/Analytics";
 import Admin from "@/pages/Admin";
 import AuditLogs from "@/pages/AuditLogs";
 import NotFound from "@/pages/NotFound";
+import { Amplify } from "aws-amplify";
+import awsExports from "./aws-exports";
+
 
 const queryClient = new QueryClient();
 
@@ -34,6 +37,8 @@ function AppRoutes() {
     return (
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        {/* unauthenticated users hitting / should go to /login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -41,6 +46,9 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* if already authenticated and URL is /login, push to dashboard */}
+      <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+
       <Route element={<AppLayout user={user} onLogout={logout} />}>
         <Route
           path="/dashboard"
@@ -121,7 +129,6 @@ function AppRoutes() {
     </Routes>
   );
 }
-
 
 export default function App() {
   return (

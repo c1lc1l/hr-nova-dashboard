@@ -97,7 +97,7 @@ export default function AdminPage() {
         {/* Roles & Access Tab */}
         <TabsContent value="roles" className="space-y-6">
           {/* Add Role */}
-          <Card className="bg-card">
+          {/* <Card className="bg-card">
             <CardHeader>
               <CardTitle>Add New Role</CardTitle>
               <CardDescription>Create a new role with custom permissions.</CardDescription>
@@ -116,12 +116,12 @@ export default function AdminPage() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* Permission Matrix */}
           <Card className="bg-card">
             <CardHeader>
-              <CardTitle>Permission Matrix</CardTitle>
+              <CardTitle>Permissions</CardTitle>
               <CardDescription>Configure module access for each role.</CardDescription>
             </CardHeader>
             <CardContent>

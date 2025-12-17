@@ -48,7 +48,7 @@ export interface Document {
 
 // === Leave Types ===
 export type LeaveType = 'Annual' | 'Sick' | 'Personal' | 'Maternity' | 'Paternity' | 'Unpaid';
-export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected';
+export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected' | 'Cancelled';
 
 export interface LeaveRequest {
   id: string;

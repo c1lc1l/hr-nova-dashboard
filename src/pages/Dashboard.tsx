@@ -29,7 +29,7 @@ export default function Dashboard({ user }: DashboardProps) {
   return (
     <main className="space-y-6">
       <PageHeader
-        title={`Welcome Back, ${user?.firstName || 'Admin'}!`}
+        title={`Welcome Back!`} //, ${user?.firstName || 'Admin'}
         description="Here's what's happening in your organization today."
       />
 

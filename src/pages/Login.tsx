@@ -44,10 +44,8 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    console.log("Google button clicked");
     try {
       await signInWithRedirect({ provider: "Google" });
-      console.log("signInWithRedirect called");
     } catch (error) {
       console.error("Google sign-in error", error);
       toast({

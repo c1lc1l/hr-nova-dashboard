@@ -1,0 +1,42 @@
+type LeaveRequest
+  @model
+  @auth(
+    rules: [
+      # employees (owners) can create/read their own requests
+      { allow: owner, ownerField: "employeeId", operations: [create, read, update] }
+      # HR / SysAdmin can read & update any
+      { allow: groups, groups: ["HRAdmin", "SysAdmin"], operations: [read, update] }
+      # Managers can read & update (approve/reject)
+      { allow: groups, groups: ["Manager"], operations: [read, update] }
+    ]
+  ) {
+  id: ID!
+  employeeId: ID!         # Cognito sub
+  employeeName: String!
+  employeeAvatar: AWSURL
+  type: String!           # 'Annual' | 'Sick' | ...
+  fromDate: AWSDate!
+  toDate: AWSDate!
+  days: Int!
+  status: String!         # 'Pending' | 'Approved' | 'Rejected' | 'Cancelled'
+  reason: String
+  createdAt: AWSDateTime!
+  reviewedBy: String
+  reviewedAt: AWSDateTime
+}
+
+type LeaveBalance
+  @model
+  @auth(
+    rules: [
+      { allow: owner, ownerField: "employeeId", operations: [read] }
+      { allow: groups, groups: ["HRAdmin", "SysAdmin"], operations: [read, update] }
+    ]
+  ) {
+  id: ID!                 # e.g. "${employeeId}#Annual"
+  employeeId: ID!
+  annual: Int!
+  sick: Int!
+  personal: Int!
+  used: Int!
+}

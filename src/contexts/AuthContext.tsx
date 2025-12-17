@@ -46,27 +46,30 @@ const ROLE_PERMISSIONS: Record<AppRole, string[]> = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapCognitoToUser(cognitoUser: any | undefined): User | null {
-  if (!cognitoUser) return null;
-
-  const attrs = cognitoUser.attributes || {};
-  const groups: string[] =
-    cognitoUser?.signInUserSession?.idToken?.payload?.["cognito:groups"] || [];
+function buildUserFromSession(session: any): User | null {
+  const idToken = session?.tokens?.idToken;
+  if (!idToken) return null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const claims: any = idToken.payload ?? {};
+  const groups: string[] = (claims["cognito:groups"] as string[]) || [];
+  console.log("Cognito groups:", groups);
 
   let role: AppRole = "Employee";
   if (groups.includes("SysAdmin")) role = "System Admin";
   else if (groups.includes("HRAdmin")) role = "HR Admin";
-  else if (groups.includes("Employee")) role = "Employee";
+  else if (groups.includes("Manager")) role = "Manager";
 
   return {
-    id: attrs.sub || cognitoUser.username || "",
-    firstName: attrs.given_name || "",
-    lastName: attrs.family_name || "",
-    email: attrs.email || "",
+    id: claims.sub ?? "",
+    firstName: claims.given_name ?? "",
+    lastName: claims.family_name ?? "",
+    email: claims.email ?? "",
     avatar: "",
     role,
   };
 }
+
+
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -82,12 +85,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
   (async () => {
     try {
-      const cognitoUser = await getCurrentUser();      // instead of Auth.currentAuthenticatedUser()
-      const user = mapCognitoToUser(cognitoUser);
+      const session = await fetchAuthSession({ forceRefresh: false });
+      const user = buildUserFromSession(session); // your helper using idToken
       if (user) {
-        const session = await fetchAuthSession();      // instead of Auth.currentSession()
         const idToken = session.tokens?.idToken?.toString() ?? "";
-
         localStorage.setItem(config.auth.tokenStorageKey, idToken);
         localStorage.setItem(config.auth.userStorageKey, JSON.stringify(user));
         setState({ user, isAuthenticated: true, isLoading: false });
@@ -100,41 +101,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
   })();
 }, []);
 
+
+
 const login = useCallback(
   async (email: string, password: string): Promise<User> => {
     setState(prev => ({ ...prev, isLoading: true }));
-
     try {
-      const { isSignedIn, nextStep } = await signIn({
-        username: email,
-        password,
-      });
+      const { isSignedIn } = await signIn({ username: email, password });
+      console.log("signIn result:", isSignedIn);
 
       if (!isSignedIn) {
-        // handle nextStep (e.g. MFA) if you need it
+        throw new Error("Additional auth step required");
       }
 
-      const session = await fetchAuthSession();
-      const idToken = session.tokens?.idToken?.toString() ?? "";
-      const cognitoUser = await getCurrentUser();
-      const user = mapCognitoToUser(cognitoUser);
+      const session = await fetchAuthSession({ forceRefresh: false});
+      console.log("session tokens after login:", session.tokens);
 
-      if (!user) {
-        throw new Error("Unable to map Cognito user");
-      }
+      const user = buildUserFromSession(session);
+      console.log("built user after login:", user);
+      if (!user) throw new Error("Unable to map Cognito user");
 
-      localStorage.setItem(config.auth.tokenStorageKey, idToken);
+      const idTokenStr = session.tokens?.idToken?.toString() ?? "";
+      localStorage.setItem(config.auth.tokenStorageKey, idTokenStr);
       localStorage.setItem(config.auth.userStorageKey, JSON.stringify(user));
 
       setState({ user, isAuthenticated: true, isLoading: false });
       return user;
     } catch (error) {
+      console.error("login error", error);
       setState(prev => ({ ...prev, isAuthenticated: false, isLoading: false }));
       throw error;
     }
   },
   []
 );
+
 
   const logout = useCallback(async () => {
     await signOut();

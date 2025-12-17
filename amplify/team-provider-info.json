@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hrnova-dev-0ab76-authRole",
+      "UnauthRoleArn": "arn:aws:iam::058264081451:role/amplify-hrnova-dev-0ab76-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::058264081451:role/amplify-hrnova-dev-0ab76-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-hrnova-dev-0ab76-deployment",
+      "UnauthRoleName": "amplify-hrnova-dev-0ab76-unauthRole",
+      "StackName": "amplify-hrnova-dev-0ab76",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:058264081451:stack/amplify-hrnova-dev-0ab76/27e4b380-db33-11f0-ae43-02946f00e9a5",
+      "AmplifyAppId": "d31e2zgc0vzdk3"
+    },
+    "categories": {
+      "auth": {
+        "hrnova482c61f0": {}
+      },
+      "api": {
+        "hrnova": {}
+      }
+    }
+  }
+}
